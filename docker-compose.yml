@@ -1,0 +1,32 @@
+networks:
+  code_network:
+    driver: bridge
+
+volumes:
+  php_code_db:
+    driver: local
+
+services:
+  app:
+    container_name: php_code
+    build:
+      context: .docker
+    restart: "always"
+    ports:
+      - "8080:80" # 443 => https
+    volumes:
+      - .:/var/www/html
+    networks:
+      - code_network
+  mysql:
+    image: "mysql:8"
+    restart: "always"
+    ports:
+      - "33062:3306" # 127.0.0.1:33061
+    volumes:
+      - "php_code_db:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: root4bios
+      MYSQL_DATABASE: php_code_db
+    networks:
+      - code_network
